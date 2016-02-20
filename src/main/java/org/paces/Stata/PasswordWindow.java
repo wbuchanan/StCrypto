@@ -1,135 +1,180 @@
 package org.paces.Stata;
 
+import org.apache.commons.io.FilenameUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
 
 /**
- * A Swing program that demonstrates usages of JPasswordField component.
- * @author www.codejava.net
- *
+ * @author Billy Buchanan
+ * @version 0.0.0
  */
-public class PasswordWindow  {
+public class PasswordWindow extends JPanel implements ActionListener {
 
-	private JLabel labelPassword = new JLabel("Enter password : ");
-	private JLabel labelConfirmPassword = new JLabel("Confirm password : ");
-	private JFrame gui = new JFrame("Stata Cryptography Password Verification");
-	private JPasswordField passwordField1 = new JPasswordField(20);
-	private JPasswordField passwordField2 = new JPasswordField(20);
+	private static final JButton openButton = new JButton("Open");
+	private static final JButton encrypt = new JButton("Encrypt");
+	private static final JButton decrypt = new JButton("Decrypt to file");
+	private static final JButton decrypt2 = new JButton("Decrypt in memory");
+	private static final JButton cancel = new JButton("Cancel");
+	private static final JPasswordField pw1 = new JPasswordField(20);
+	private static final JPasswordField pw2 = new JPasswordField(20);
+	private static final JTextField filename = new JTextField(20);
+	private static final JFileChooser fc = new JFileChooser();
+	private static final JLabel fnameLab = new JLabel("Select a file: ");
+	private static final JLabel labelPassword1 = new JLabel("Enter Password:");
+	private static final JLabel labelPassword2 = new JLabel("Confirm Password:");
+	private static String theFile;
+	private static final JPanel filePanel = new JPanel();
+	private static final JPanel pwPanel = new JPanel();
+	private static final JPanel options = new JPanel();
+	private static final GridBagLayout layout = new GridBagLayout();
+	private static final GridBagConstraints constraints = new GridBagConstraints();
+	private static final JFrame f = new JFrame("Stata Cryptography");
 
-	private JButton submit = new JButton("Submit");
-	private JButton cancel = new JButton("Cancel");
-	private PWContainer passwordContainer = new PWContainer();
-	private Boolean pw1valid = false;
-	private Boolean pw2valid = false;
-	private JTextArea pwqual = new JTextArea("Password requires a minimum of " +
-			"1 lower case, 1 upper case, 1 numeric, and 1 special character");
+	private static File cryptFile;
+	private static String fileStub;
+	private static String fileExt;
 
-	public void makeGui() {
+	public PasswordWindow() {
 
-		this.gui.setLayout(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
+		//Create the log first, because the action listeners
+		//need to refer to it.
+		filename.setEditable(true);
+		filename.setScrollOffset(15);
+
+		//Create the open button.  We use the image from the JLF
+		//Graphics Repository (but we extracted it from the jar).
+		openButton.addActionListener(this);
+		encrypt.addActionListener(this);
+		decrypt.addActionListener(this);
+		decrypt2.addActionListener(this);
+		cancel.addActionListener(this);
+
+		f.setLayout(layout);
 		constraints.anchor = GridBagConstraints.WEST;
 		constraints.insets = new Insets(10, 10, 10, 10);
 
 		constraints.gridx = 0;
 		constraints.gridy = 0;
-		this.gui.add(pwqual, constraints);
+		f.add(fnameLab, constraints);
+		constraints.gridx = 1;
+		f.add(filename, constraints);
+		constraints.gridx = 2;
+		f.add(openButton, constraints);
 
 		constraints.gridx = 0;
 		constraints.gridy = 1;
-		this.gui.add(labelPassword, constraints);
-
+		f.add(labelPassword1, constraints);
 		constraints.gridx = 1;
-		this.gui.add(passwordField1, constraints);
-
-		passwordField1.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent event) {
-				validatePassword(event, 1);
-			}
-		});
-
-		passwordField2.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyTyped(KeyEvent event) {
-				validatePassword(event, 2);
-			}
-		});
-
-
+		f.add(pw1, constraints);
+		constraints.gridx = 2;
+		f.add(cancel, constraints);
 
 		constraints.gridx = 0;
 		constraints.gridy = 2;
-		gui.add(labelConfirmPassword, constraints);
-
+		f.add(labelPassword2, constraints);
 		constraints.gridx = 1;
-		gui.add(passwordField2, constraints);
+		f.add(pw2, constraints);
 
 		constraints.gridx = 0;
 		constraints.gridy = 3;
-		constraints.gridwidth = 2;
-		constraints.anchor = GridBagConstraints.CENTER;
-		this.gui.add(submit, constraints);
+		f.add(encrypt, constraints);
+
 		constraints.gridx = 1;
-		this.gui.add(cancel, constraints);
+		f.add(decrypt, constraints);
 
-		submit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				submitButton(event);
-			}
-		});
+		constraints.gridx = 2;
+		f.add(decrypt2, constraints);
 
-		cancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				passwordField1.setText("");
-				passwordField2.setText("");
-				gui.dispose();
-			}
-		});
-
-		this.gui.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		this.gui.pack();
-		this.gui.setLocationRelativeTo(null);
 	}
 
-	public void validatePassword(KeyEvent event, Integer field) {
-		JPasswordField pwfield = (JPasswordField) event.getSource();
-		char[] password = pwfield.getPassword();
-		if (field == 1) pw1valid = PasswordValidation.validPassword(password);
-		else pw2valid = PasswordValidation.validPassword(password);
+	public void actionPerformed(ActionEvent e) {
+
+		//Handle open button action.
+		if (e.getSource() == openButton) {
+			//Create a file chooser
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fc.setMultiSelectionEnabled(false);
+			int returnVal = fc.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				cryptFile = fc.getSelectedFile().getAbsoluteFile();
+				fileStub = FilenameUtils.getBaseName(cryptFile.getAbsolutePath());
+				fileExt = FilenameUtils.getExtension(cryptFile.getAbsolutePath());
+				filename.setText(cryptFile.getAbsolutePath());
+				//This is where a real application would open the file.
+			}
+		//Handle save button action.
+		} else if (e.getSource() == encrypt) {
+			if(checkPW()) {
+				CryptoIO cf = new CryptoIO(fileStub);
+				try {
+					byte[] data = cf.read(fileExt);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		} else if (e.getSource() == decrypt) {
+
+		} else if (e.getSource() == decrypt2) {
+
+		} else if (e.getSource() == cancel) {
+			pw1.setText("");
+			pw2.setText("");
+			f.dispose();
+		}
+
 	}
 
-	private void submitButton(ActionEvent event) {
-		char[] password1 = passwordField1.getPassword();
-		char[] password2 = passwordField2.getPassword();
-		if (!Arrays.equals(password1, password2)) {
-			JOptionPane.showMessageDialog(this.gui, "Passwords do not match!");
-			passwordField1.setText("");
-			passwordField2.setText("");
+	/** Returns an ImageIcon, or null if the path was invalid. */
+	protected static ImageIcon createImageIcon(String path) {
+		java.net.URL imgURL = FileChooserDemo.class.getResource(path);
+		if (imgURL != null) {
+			return new ImageIcon(imgURL);
 		} else {
-			passwordContainer.setValidPassword(password2);
-			passwordField1.setText("");
-			passwordField2.setText("");
-			gui.dispose();
+			System.err.println("Couldn't find file: " + path);
+			return null;
 		}
 	}
 
-	public PWContainer getPasswordContainer() {
-		return this.passwordContainer;
+	private static Boolean checkPW() {
+		if (!PasswordValidation.validPassword(pw1.getPassword())) {
+			String msg = PasswordValidation.invalidMessage(pw1.getPassword());
+			pw1.setText("");
+			pw2.setText("");
+			JOptionPane.showMessageDialog(f, msg);
+			return false;
+		} else {
+			return true;
+		}
 	}
 
-	public PasswordWindow(){
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				makeGui();
-				gui.setVisible(true);
-			}
+	/**
+	 * Create the GUI and show it.  For thread safety,
+	 * this method should be invoked from the
+	 * event dispatch thread.
+	 */
+	private static void createAndShowGUI() {
+		//Create and set up the window.
+		f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+		//Add content to the window.
+		new FileChooserDemo();
+
+		//Display the window.
+		f.pack();
+		f.setVisible(true);
+	}
+
+	public static void main(String[] args) {
+		//Schedule a job for the event dispatch thread:
+		//creating and showing this application's GUI.
+		SwingUtilities.invokeLater(() -> {
+			//Turn off metal's use of bold fonts
+			UIManager.put("swing.boldMetal", Boolean.FALSE);
+			createAndShowGUI();
 		});
 	}
-
 }

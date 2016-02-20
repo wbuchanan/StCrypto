@@ -14,13 +14,11 @@ import java.security.spec.InvalidParameterSpecException;
 public class StEncrypt {
 
 	public static void encryptFile(String[] args) throws NoSuchPaddingException,
-			NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException, IOException, InvalidKeySpecException {
-		PasswordWindow x = new PasswordWindow();
-		char[] pwval = x.getPasswordContainer().getValidPassword();
-		Password pw = new Password(args[1], pwval);
-		pw.writeSalt();
-		EncryptFile fileEncryption = new EncryptFile(args[0], args[2], pw.getSecret());
-
+		NoSuchAlgorithmException, IllegalBlockSizeException,
+		BadPaddingException, InvalidKeyException,
+		InvalidParameterSpecException, IOException,
+		InvalidKeySpecException {
+		new PasswordWindow(args);
 	}
 
 }

@@ -1,7 +1,5 @@
 package org.paces.Stata;
 
-import com.stata.sfi.SFIToolkit;
-
 import javax.crypto.*;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -15,17 +13,9 @@ import java.security.spec.InvalidParameterSpecException;
  */
 public class Crypto {
 
-	public static int encryptFile(String[] args) {
-		try {
-			StEncrypt.encryptFile(args);
-			return 0;
-		} catch (NoSuchPaddingException | NoSuchAlgorithmException |
-				IllegalBlockSizeException | BadPaddingException |
-				InvalidKeyException | InvalidParameterSpecException |
-				IOException | InvalidKeySpecException e) {
-			SFIToolkit.stackTraceToString(e);
-			return 1;
-		}
+	public static int encryptFile(String[] args) throws NoSuchPaddingException, InvalidKeySpecException, NoSuchAlgorithmException, IllegalBlockSizeException, IOException, BadPaddingException, InvalidKeyException, InvalidParameterSpecException {
+		StEncrypt.encryptFile(args);
+		return 0;
 	}
 
 }

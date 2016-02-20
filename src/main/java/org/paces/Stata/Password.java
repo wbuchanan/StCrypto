@@ -29,9 +29,8 @@ public class Password {
 	private SecretKey secret;
 	private String saltFilePath;
 
-	public Password(String saltFile, char[] pw) throws InvalidKeySpecException, NoSuchAlgorithmException {
+	public Password(String saltFile) throws InvalidKeySpecException, NoSuchAlgorithmException {
 		this.saltFilePath = saltFile;
-		setPassword(pw);
 	}
 
 	protected void setPassword(char[] pw) throws NoSuchAlgorithmException,
