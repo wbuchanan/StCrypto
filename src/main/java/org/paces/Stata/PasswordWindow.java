@@ -1,12 +1,17 @@
-package org.paces.Stata;
+package org.paces.Stata.Cryptography;
 
 import org.apache.commons.io.FilenameUtils;
 
+import javax.crypto.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidParameterSpecException;
+import java.util.Arrays;
 
 /**
  * @author Billy Buchanan
@@ -37,6 +42,7 @@ public class PasswordWindow extends JPanel implements ActionListener {
 	private static File cryptFile;
 	private static String fileStub;
 	private static String fileExt;
+	private static String filePath;
 
 	public PasswordWindow() {
 
@@ -100,25 +106,33 @@ public class PasswordWindow extends JPanel implements ActionListener {
 			fc.setMultiSelectionEnabled(false);
 			int returnVal = fc.showOpenDialog(this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				cryptFile = fc.getSelectedFile().getAbsoluteFile();
-				fileStub = FilenameUtils.getBaseName(cryptFile.getAbsolutePath());
-				fileExt = FilenameUtils.getExtension(cryptFile.getAbsolutePath());
-				filename.setText(cryptFile.getAbsolutePath());
+				setInFile(fc);
+				setFileNameParams();
 				//This is where a real application would open the file.
 			}
 		//Handle save button action.
 		} else if (e.getSource() == encrypt) {
+			setInFile();
+			setFileNameParams();
 			if(checkPW()) {
-				CryptoIO cf = new CryptoIO(fileStub);
-				try {
-					byte[] data = cf.read(fileExt);
-				} catch (IOException e1) {
-					e1.printStackTrace();
+				if (isSame()) {
+					CryptoIO cf = new CryptoIO(filePath);
+					try {
+						cf.read(fileExt);
+						makePopUp(cf.encrypt(256, pw2.getPassword()));
+					} catch (IOException | NoSuchPaddingException |
+							NoSuchAlgorithmException | InvalidKeyException |
+							InvalidParameterSpecException e1) {
+						e1.printStackTrace();
+					}
+					encrypt.setSelected(false);
 				}
 			}
 		} else if (e.getSource() == decrypt) {
+			setFileNameParams();
 
 		} else if (e.getSource() == decrypt2) {
+			setFileNameParams();
 
 		} else if (e.getSource() == cancel) {
 			pw1.setText("");
@@ -130,7 +144,7 @@ public class PasswordWindow extends JPanel implements ActionListener {
 
 	/** Returns an ImageIcon, or null if the path was invalid. */
 	protected static ImageIcon createImageIcon(String path) {
-		java.net.URL imgURL = FileChooserDemo.class.getResource(path);
+		java.net.URL imgURL = PasswordWindow.class.getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL);
 		} else {
@@ -139,16 +153,49 @@ public class PasswordWindow extends JPanel implements ActionListener {
 		}
 	}
 
+	private void setInFile(JFileChooser fc) {
+		cryptFile = fc.getSelectedFile().getAbsoluteFile();
+		filePath = cryptFile.getAbsolutePath();
+	}
+
+	private void setInFile() {
+		cryptFile = new File(filename.getText()).getAbsoluteFile();
+		filePath = cryptFile.getAbsolutePath();
+	}
+
+	private void setFileNameParams() {
+		fileStub = FilenameUtils.getBaseName(cryptFile.getAbsolutePath());
+		fileExt = FilenameUtils.getExtension(cryptFile.getAbsolutePath());
+		filename.setText(cryptFile.getAbsolutePath());
+	}
+
 	private static Boolean checkPW() {
 		if (!PasswordValidation.validPassword(pw1.getPassword())) {
 			String msg = PasswordValidation.invalidMessage(pw1.getPassword());
 			pw1.setText("");
 			pw2.setText("");
-			JOptionPane.showMessageDialog(f, msg);
+			makePopUp(msg);
 			return false;
 		} else {
 			return true;
 		}
+	}
+
+	private static void makePopUp(String message) {
+		JOptionPane.showMessageDialog(f, message);
+	}
+
+	private static Boolean isSame() {
+		if (!Arrays.equals(pw1.getPassword(), pw2.getPassword())) {
+			String msg = "Confirmation Password Does not Match First Password";
+			pw1.setText("");
+			pw2.setText("");
+			makePopUp(msg);
+			return false;
+		} else {
+			return true;
+		}
+
 	}
 
 	/**
@@ -161,7 +208,7 @@ public class PasswordWindow extends JPanel implements ActionListener {
 		f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		//Add content to the window.
-		new FileChooserDemo();
+		new PasswordWindow();
 
 		//Display the window.
 		f.pack();

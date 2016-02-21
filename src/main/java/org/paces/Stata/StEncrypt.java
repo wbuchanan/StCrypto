@@ -18,7 +18,7 @@ public class StEncrypt {
 		BadPaddingException, InvalidKeyException,
 		InvalidParameterSpecException, IOException,
 		InvalidKeySpecException {
-		new PasswordWindow(args);
+		new PasswordWindow();
 	}
 
 }

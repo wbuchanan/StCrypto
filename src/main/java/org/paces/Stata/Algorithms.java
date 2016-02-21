@@ -1,26 +1,33 @@
-package org.paces.Stata;
-
-import java.security.Security;
-import java.util.Set;
+package org.paces.Stata.Cryptography;
 
 /**
  * @author Billy Buchanan
  * @version 0.0.0
  */
-public class Algorithms {
+public enum Algorithms {
+	aes("AES"),
+	aeswrap("AESWrap"),
+	arcfour("ARCFOUR"),
+	blowfish("Blowfish"),
+	ccm("CCM"),
+	des("DES"),
+	desede("DESede"),
+	desedewrap("DESedeWrap"),
+	ecies("ECIES"),
+	rc2("RC2"),
+	rc4("RC4"),
+	rc5("RC5"),
+	rsa("RSA");
 
-	public static Set<String> algos;
+	private final String algorithm;
 
-	public Algorithms() {
-		algos.addAll(Security.getAlgorithms("Signature"));
-		algos.addAll(Security.getAlgorithms("MessageDigest"));
-		algos.addAll(Security.getAlgorithms("Cipher"));
-		algos.addAll(Security.getAlgorithms("Mac"));
-		algos.addAll(Security.getAlgorithms("KeyStore"));
+	private Algorithms(final String algorithm) {
+		this.algorithm = algorithm;
 	}
 
-	public static Boolean checkAlgo(String algorithm) {
-		return algos.contains(algorithm);
+	@Override
+	public String toString() {
+		return this.algorithm;
 	}
 
 }
