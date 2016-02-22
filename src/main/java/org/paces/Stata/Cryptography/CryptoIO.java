@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * This class is based - in part - on the example Gist provided at:
+ * https://gist.github.com/dweymouth/11089238
  * @author Billy Buchanan
  * @version 0.0.0
  */
