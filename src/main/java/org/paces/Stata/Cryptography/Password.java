@@ -1,4 +1,4 @@
-package org.paces.Stata;
+package org.paces.Stata.Cryptography;
 
 import javax.crypto.*;
 import javax.crypto.spec.*;

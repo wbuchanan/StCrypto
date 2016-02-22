@@ -27,8 +27,8 @@ public class CryptoKey {
 	private static String CIPHER_TYPE;
 	private static String KEYGEN;
 	private static final Integer DEFAULT_KEY_LENGTH = 256;
-	private static final Integer DEFAULT_SALT_LENGTH = 16;
-	private static final Integer DEFAULT_AUTH_LENGTH = 8;
+	protected static final Integer DEFAULT_SALT_LENGTH = 16;
+	protected static final Integer DEFAULT_AUTH_LENGTH = 8;
 	private static final Integer DEFAULT_ITERATIONS = 1000;
 	private static Cipher encrypt;
 

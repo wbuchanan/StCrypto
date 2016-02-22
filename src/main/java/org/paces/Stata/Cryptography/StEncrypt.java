@@ -1,4 +1,4 @@
-package org.paces.Stata;
+package org.paces.Stata.Cryptography;
 
 import javax.crypto.*;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class StEncrypt {
 		BadPaddingException, InvalidKeyException,
 		InvalidParameterSpecException, IOException,
 		InvalidKeySpecException {
-		new PasswordWindow();
+		new PasswordWindow(args);
 	}
 
 }

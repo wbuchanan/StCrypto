@@ -44,7 +44,13 @@ public class PasswordWindow extends JPanel implements ActionListener {
 	private static String fileExt;
 	private static String filePath;
 
-	public PasswordWindow() {
+	public PasswordWindow(String[] args) {
+
+		if (args != null && args.length >= 1) {
+			filename.setText(args[0]);
+			setInFile();
+			setFileNameParams();
+		}
 
 		//Create the log first, because the action listeners
 		//need to refer to it.
@@ -92,8 +98,8 @@ public class PasswordWindow extends JPanel implements ActionListener {
 		constraints.gridx = 1;
 		f.add(decrypt, constraints);
 
-		constraints.gridx = 2;
-		f.add(decrypt2, constraints);
+//		constraints.gridx = 2;
+//		f.add(decrypt2, constraints);
 
 	}
 
@@ -129,10 +135,19 @@ public class PasswordWindow extends JPanel implements ActionListener {
 				}
 			}
 		} else if (e.getSource() == decrypt) {
+			setInFile();
 			setFileNameParams();
-
-		} else if (e.getSource() == decrypt2) {
-			setFileNameParams();
+			if (checkPW() && isSame()) {
+				CryptoIO cf = new CryptoIO(filePath);
+				try {
+					makePopUp(cf.decrypt(pw2.getPassword()));
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				decrypt.setSelected(false);
+			}
+//		} else if (e.getSource() == decrypt2) {
+//			setFileNameParams();
 
 		} else if (e.getSource() == cancel) {
 			pw1.setText("");
@@ -170,8 +185,8 @@ public class PasswordWindow extends JPanel implements ActionListener {
 	}
 
 	private static Boolean checkPW() {
-		if (!PasswordValidation.validPassword(pw1.getPassword())) {
-			String msg = PasswordValidation.invalidMessage(pw1.getPassword());
+		if (!org.paces.Stata.Cryptography.PasswordValidation.validPassword(pw1.getPassword())) {
+			String msg = org.paces.Stata.Cryptography.PasswordValidation.invalidMessage(pw1.getPassword());
 			pw1.setText("");
 			pw2.setText("");
 			makePopUp(msg);
@@ -203,12 +218,12 @@ public class PasswordWindow extends JPanel implements ActionListener {
 	 * this method should be invoked from the
 	 * event dispatch thread.
 	 */
-	private static void createAndShowGUI() {
+	private static void createAndShowGUI(String[] args) {
 		//Create and set up the window.
 		f.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		//Add content to the window.
-		new PasswordWindow();
+		new PasswordWindow(args);
 
 		//Display the window.
 		f.pack();
@@ -221,7 +236,16 @@ public class PasswordWindow extends JPanel implements ActionListener {
 		SwingUtilities.invokeLater(() -> {
 			//Turn off metal's use of bold fonts
 			UIManager.put("swing.boldMetal", Boolean.FALSE);
-			createAndShowGUI();
+			createAndShowGUI(args);
 		});
+	}
+
+	public static Boolean launch(String[] args) {
+		SwingUtilities.invokeLater(() -> {
+			//Turn off metal's use of bold fonts
+			UIManager.put("swing.boldMetal", Boolean.FALSE);
+			createAndShowGUI(args);
+		});
+		return true;
 	}
 }

@@ -6,14 +6,13 @@
 
 	<!-- This contains the overall package metadata -->
 	<groupId>org.paces-consulting</groupId>
-	<artifactId>StCrypto</artifactId>
+	<artifactId>stata-crypto</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	<name>Stata Java Tools</name>
-	<description>Java plugins used to extend capabilities in Stata
-		statical software platform.</description>
-	<url>https://github.com/wbuchanan/StataJSON</url>
-
+	<name>Stata Cryptography Tools</name>
+	<description>Java Plugin to Provide Cryptography Capabilities
+		in Stata</description>
+	<url>https://github.com/wbuchanan/StCrypto</url>
 
 	<!-- Information regarding organization publishing the plugin -->
 	<organization>
